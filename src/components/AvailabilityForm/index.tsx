@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Input, Select, VStack, useToast } from '@chakra-ui/react';
-import axios from 'axios';
 import api from '../../api';
 
 interface AvailabilityFormProps {
@@ -9,13 +8,17 @@ interface AvailabilityFormProps {
 
 const AvailabilityForm: React.FC<AvailabilityFormProps> = ({ onAvailabilityChange }) => {
   const [dayOfWeek, setDayOfWeek] = useState('');
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const toast = useToast();
 
   const handleSetAvailability = async () => {
     try {
-      await api.post('/api/availability', { dayOfWeek, startTime, endTime }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      await api.post('/api/availabilities/default', {
+        dayOfWeek,
+        startTime,
+        endTime
+      }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       toast({ title: 'Availability set successfully', status: 'success', duration: 3000 });
       onAvailabilityChange();
     } catch (error) {
@@ -40,11 +43,11 @@ const AvailabilityForm: React.FC<AvailabilityFormProps> = ({ onAvailabilityChang
         </FormControl>
         <FormControl id="startTime">
           <FormLabel>Start Time</FormLabel>
-          <Input type="time" value={String(startTime)} onChange={(e) => setStartTime(new Date(e.target.value))} />
+          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
         </FormControl>
         <FormControl id="endTime">
           <FormLabel>End Time</FormLabel>
-          <Input type="time" value={String(endTime)} onChange={(e) => setEndTime(new Date(e.target.value))} />
+          <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
         </FormControl>
         <Button colorScheme="teal" onClick={handleSetAvailability}>Set Availability</Button>
       </VStack>
